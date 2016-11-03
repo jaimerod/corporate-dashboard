@@ -1,0 +1,50 @@
+{
+    "january":{
+        "sales": 135000,
+        "customers": 234
+    },
+    "february": {
+        "sales": 155000,
+        "customers": 345
+    },
+    "march": {
+        "sales": 136000,
+        "customers": 123
+    },
+    "april": {
+        "sales": 235000,
+        "customers": 253
+    },
+    "may": {
+        "sales": 135000,
+        "customers": 354
+    },
+    "june": {
+        "sales": 335000,
+        "customers": 412
+    },
+    "july": {
+        "sales": 345000,
+        "customers": 534
+    },
+    "august": {
+        "sales": 405000,
+        "customers": 598
+    },
+    "september": {
+        "sales": 335000,
+        "customers": 615
+    },
+    "october": {
+        "sales": 235000,
+        "customers": 678
+    },
+    "november": {
+        "sales": 135000,
+        "customers": 789
+    },
+    "december": {
+        "sales": 635000,
+        "customers": 876
+    }
+}

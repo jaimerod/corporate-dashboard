@@ -1,0 +1,43 @@
+<link rel="import" href="/lib/polymer/polymer.html" />
+<link rel="import" href="/lib/google-chart/google-chart.html" />
+
+<dom-module id="geo-page">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+      :host([active]) {
+        display: block;
+      }
+      google-chart {
+        width: 700;
+        height: 500px;
+      }
+    </style>
+    <google-chart
+      type='geo'
+      options='{"region": "US", "resolution": "provinces"}'
+      cols='[{"label":"State", "type":"string"}, {"label":"Employees", "type":"number"}]'
+      rows='{{data}}'></google-chart>
+  </template>
+  <script>
+    Polymer({
+      is: 'geo-page',
+      properties: {
+        active: {
+          type: Boolean,
+          value: true
+        },
+        data: {
+          type: Array,
+          observer: '_dataChanged'
+        }
+      },
+      ready: function () {},
+      _dataChanged: function (newValue, oldValue) {
+        
+      }
+    });
+  </script>
+</dom-module>

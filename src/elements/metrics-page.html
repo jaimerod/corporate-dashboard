@@ -1,0 +1,115 @@
+<link rel="import" href="/lib/polymer/polymer.html" />
+<link rel="import" href="/lib/paper-card/paper-card.html" />
+<link rel="import" href="/lib/google-chart/google-chart.html" />
+
+<dom-module id="metrics-page">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+      :host([active]) {
+        display: block;
+      }
+      .card-content h1 {
+        text-align: center;
+      }
+      paper-card {
+        width: 100%;
+        height: 500px;
+        margin: 16px;
+      }
+      paper-card:nth-child(1) {
+        height: 200px;
+      }
+      google-chart {
+        width: 100%;
+        height: 75%;
+      }
+    </style>
+    <paper-card heading="Open issues">
+      <div class="card-content">
+        <h1>{{issues.length}}</h1>
+      </div>
+    </paper-card>
+     <paper-card heading="Customers per month">
+      <div class="card-content">
+        <google-chart
+          type='line'
+          cols='[{"label":"Month", "type":"string"}, {"label":"Customers", "type":"number"}]'
+          rows='{{lineChart}}'></google-chart>
+      </div>
+    </paper-card>
+     <paper-card heading="Issues per month">
+      <div class="card-content">
+        <google-chart
+          type='bar'
+          cols='[{"label":"Month", "type":"string"}, {"label":"Issues", "type":"number"}]'
+          rows='{{barChart}}'></google-chart>
+      </div>
+    </paper-card>
+  </template>
+  <script>
+    Polymer({
+      is: 'metrics-page',
+      properties: {
+        active: {
+          type: Boolean,
+          value: true
+        },
+        sales: {
+          type: Array,
+          observer: '_salesChanged'
+        },
+        issues: {
+          type: Array,
+          observer: '_issuesChanged'
+        }
+      },
+      ready: function () {},
+      _salesChanged: function (newValue, oldValue) {
+        var months = [
+          ["January", newValue['january']['customers']],
+          ["February", newValue['february']['customers']],
+          ["March", newValue['march']['customers']],
+          ["April", newValue['april']['customers']],
+          ["May", newValue['may']['customers']],
+          ["June", newValue['june']['customers']],
+          ["July", newValue['july']['customers']],
+          ["August", newValue['august']['customers']],
+          ["September", newValue['september']['customers']],
+          ["October", newValue['october']['customers']],
+          ["November", newValue['november']['customers']],
+          ["December", newValue['december'['customers']]]
+        ];
+        this.lineChart = months;
+      },
+      _issuesChanged: function (newValue, oldValue) {
+        function inTheMonthOf(month) {
+          return function (issue) {
+            var d = new Date(parseInt(issue['submission-timestamp']));
+            var issueMonth = d.getMonth();
+            return issueMonth === month - 1;
+          }
+        }
+
+        var months = [
+          ["January", newValue.filter(inTheMonthOf(1)).length],
+          ["February", newValue.filter(inTheMonthOf(2)).length],
+          ["March", newValue.filter(inTheMonthOf(3)).length],
+          ["April", newValue.filter(inTheMonthOf(4)).length],
+          ["May", newValue.filter(inTheMonthOf(5)).length],
+          ["June", newValue.filter(inTheMonthOf(6)).length],
+          ["July", newValue.filter(inTheMonthOf(7)).length],
+          ["August", newValue.filter(inTheMonthOf(8)).length],
+          ["September", newValue.filter(inTheMonthOf(9)).length],
+          ["October", newValue.filter(inTheMonthOf(10)).length],
+          ["November", newValue.filter(inTheMonthOf(11)).length],
+          ["December", newValue.filter(inTheMonthOf(12)).length]
+        ];
+
+        this.barChart = months;
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,83 @@
+[
+	{
+		"submission-timestamp": "1465152143583",
+		"customer-name": "John Joe",
+		"customer-email address": "john@joe.com",
+		"description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+		"open-closed-status": "closed",
+		"closed-timestamp": "1459795429983",
+		"employee-name": "Arthur Arthurson"
+	}, {
+		"submission-timestamp": "1459795429983",
+		"customer-name": "Kelly Koe",
+		"customer-email address": "kelly@koe.com",
+		"description": "Nam volutpat purus pharetra mauris pellentesque porta. Cras tincidunt",
+		"open-closed-status": "closed",
+		"closed-timestamp": "1459795516383",
+		"employee-name": "Betty Betterson"
+	}, {
+		"submission-timestamp": "1459795516383",
+		"customer-name": "Larry Loe",
+		"customer-email address": "larry@loe.com",
+		"description": "Nullam pellentesque justo ut dignissim ultricies. Fusce massa",
+		"open-closed-status": "closed",
+		"closed-timestamp": "1459795602783",
+		"employee-name": "Chris Christerson"
+	}, {
+		"submission-timestamp": "1459795602783",
+		"customer-name": "Mike Moe",
+		"customer-email address": "mike@moe.com",
+		"description": "Ut libero urna, bibendum non dui vel, fringilla",
+		"open-closed-status": "closed",
+		"closed-timestamp": "1459795689183",
+		"employee-name": "David Davidson"
+	}, {
+		"submission-timestamp": "1459795689183",
+		"customer-name": "Nick Noe",
+		"customer-email address": "nick@noe.com",
+		"description": "Phasellus ac dapibus nulla, consectetur dapibus libero. Morbi",
+		"open-closed-status": "closed",
+		"closed-timestamp": "1459795775583",
+		"employee-name": "Earnest Earnestson"
+	}, {
+		"submission-timestamp": "1459795775583",
+		"customer-name": "Oscar Ooe",
+		"customer-email address": "oscar@ooe.com",
+		"description": "Suspendisse ac odio gravida, consequat lectus ut, laoreet",
+		"open-closed-status": "opened",
+		"closed-timestamp": "",
+		"employee-name": "Frederick Frederickson"
+	}, {
+		"submission-timestamp": "1459795861983",
+		"customer-name": "Peter Poe",
+		"customer-email address": "peter@poe.com",
+		"description": "Praesent porttitor hendrerit ex vitae iaculis. Fusce ultricies aliquam",
+		"open-closed-status": "closed",
+		"closed-timestamp": "1459795948383",
+		"employee-name": "Gary Garyson"
+	}, {
+		"submission-timestamp": "1459795948383",
+		"customer-name": "Quigley Qoe",
+		"customer-email address": "quigley@qoe.com",
+		"description": "Donec ipsum odio, vehicula sed lorem sit amet",
+		"open-closed-status": "opened",
+		"closed-timestamp": "",
+		"employee-name": "Harold Haroldson"
+	}, {
+		"submission-timestamp": "1459796034783",
+		"customer-name": "Richy Roe",
+		"customer-email address": "richy@roe.com",
+		"description": "Fusce a consectetur est, sit amet ultrices metus",
+		"open-closed-status": "closed",
+		"closed-timestamp": "1459796121183",
+		"employee-name": "Igor Igorson"
+	}, {
+		"submission-timestamp": "1459796121183",
+		"customer-name": "Sammy Soe",
+		"customer-email address": "sammy@soe.com",
+		"description": "Mauris pharetra ipsum et auctor hendrerit. Nulla ut elit",
+		"open-closed-status": "opened",
+		"closed-timestamp": "",
+		"employee-name": "James Jameson"
+	}
+]

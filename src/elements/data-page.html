@@ -1,0 +1,110 @@
+<link rel="import" href="/lib/polymer/polymer.html" />
+<link rel="import" href="/lib/vaadin-grid/vaadin-grid.html">
+
+<dom-module id="data-page">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+      :host([active]) {
+        display: block;
+      }
+    </style>
+    <vaadin-grid id="simple">
+      <table>
+        <colgroup>
+          <col sortable sort-direction="asc" name="submission-timestamp"/>
+          <col sortable name="customer-name"/>
+          <col sortable name="customer-email address"/>
+          <col sortable name="description" />
+          <col sortable name="open-closed-status" />
+          <col sortable name="closed-timestamp" />
+          <col sortable name="employee-name" />
+        </colgroup>
+      </table>
+    </vaadin-grid>
+  </template>
+  <script>
+    Polymer({
+      is: 'data-page',
+      properties: {
+
+        active: {
+          type: Boolean,
+          value: true
+        },
+        data: {
+          type: Array,
+          observer: '_issuesUpdated'
+        }
+      },
+      ready: function () {
+        var grid = this.$$('#simple');
+        var that = this;
+
+        var map = [
+          "submission-timestamp",
+          "customer-name",
+          "customer-email address",
+          "description",
+          "open-closed-status",
+          "closed-timestamp",
+          "employee-name"
+        ];
+
+        grid.addEventListener('sort-order-changed', function(e) {
+          var idx = map[grid.sortOrder[0].column];
+          var lesser = grid.sortOrder[0].direction == 'asc' ? -1 : 1;
+
+          e.preventDefault();
+          that.data.sort(function(a, b) {
+            return (a[idx] < b[idx]) ? lesser : -lesser;
+          });
+        });
+
+        /*var filterElement = document.querySelector('#filter');
+
+        filterElement.addEventListener('input', function() {
+          grid.refreshItems();
+        });
+
+        grid.items = function(params, callback) {
+          var filterValue = filterElement.value.toLowerCase();
+          var data = dataArray.filter(function(item) {
+            return (item.toString().toLowerCase()).indexOf(filterValue) != -1;
+          });
+          var slice = data.slice(params.index, params.index + params.count);
+          callback(slice, data.length);
+        };*/
+      },
+      _issuesUpdated: function (newValue, oldValue) {
+        //if (typeof newValue === "undefined") return;
+
+        var grid = this.$$('#simple');
+
+        newValue = newValue.map(function (item) {
+          var d;
+
+          d = new Date(parseInt(item['submission-timestamp']));
+          item['submission-timestamp'] = d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes();
+
+          if (item['closed-timestamp'].length) {
+            d = new Date(parseInt(item['closed-timestamp']));
+            item['closed-timestamp'] = d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes();
+          }
+
+          return item;
+        });
+
+        if (newValue === oldValue) {
+          return false;
+        }
+
+        grid.items = this.data;
+        grid.size = this.data.length;
+/*        grid.refreshItems();*/
+      }
+    });
+  </script>
+</dom-module>
