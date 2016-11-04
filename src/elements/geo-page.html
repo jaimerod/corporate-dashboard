@@ -5,38 +5,86 @@
   <template>
     <style>
       :host {
-        display: none;
+        position: absolute;
+        left: -9999px;
       }
       :host([active]) {
-        display: block;
+        position: static;
       }
       google-chart {
-        width: 700;
-        height: 500px;
+        width: 100%;
+        height: auto;
       }
     </style>
+
+    <!-- Data -->
+    <iron-ajax
+      id="ajax-employees"
+      url="/data/employees.csv"
+      handle-as="text"
+      last-response="{{data}}"
+      auto></iron-ajax>
+
+    <!-- Display -->
     <google-chart
       type='geo'
       options='{"region": "US", "resolution": "provinces"}'
       cols='[{"label":"State", "type":"string"}, {"label":"Employees", "type":"number"}]'
-      rows='{{data}}'></google-chart>
+      rows='{{employees}}'></google-chart>
   </template>
+
   <script>
     Polymer({
       is: 'geo-page',
       properties: {
         active: {
           type: Boolean,
-          value: true
+          value: false
         },
         data: {
           type: Array,
+          value: '"location", "employees"',
           observer: '_dataChanged'
         }
       },
-      ready: function () {},
+      ready: function () {
+        var ajaxEmployee = this.$$('#ajax-employees');
+
+        setInterval(function () {
+          if (this.active === true) {
+            ajaxEmployee.generateRequest();
+          }
+        }.bind(this), 1000);
+      },
+
       _dataChanged: function (newValue, oldValue) {
-        
+        var data = this._parseCSV(newValue.trim(), ",");
+        data.shift();
+        data.forEach(function (item, index, items) {
+          data[index][1] = parseInt(data[index][1]);
+        });
+
+        this.employees = data;
+      },
+
+      _parseCSV: function(s, sep) {
+        if (typeof s !== "string") return false;
+
+        // http://stackoverflow.com/questions/1155678/javascript-string-newline-character
+        var universalNewline = /\r\n|\r|\n/g;
+        var a = s.split(universalNewline);
+        for(var i in a){
+          for (var f = a[i].split(sep = sep || ","), x = f.length - 1, tl; x >= 0; x--) {
+            if (f[x].replace(/"\s+$/, '"').charAt(f[x].length - 1) == '"') {
+              if ((tl = f[x].replace(/^\s+"/, '"')).length > 1 && tl.charAt(0) == '"') {
+                f[x] = f[x].replace(/^\s*"|"\s*$/g, '').replace(/""/g, '"');
+              } else if (x) {
+                f.splice(x - 1, 2, [f[x - 1], f[x]].join(sep));
+              } else f = f.shift().split(sep).concat(f);
+            } else f[x].replace(/""/g, '"');
+          } a[i] = f;
+        }
+        return a;
       }
     });
   </script>

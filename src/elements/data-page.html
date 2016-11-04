@@ -5,12 +5,39 @@
   <template>
     <style>
       :host {
-        display: none;
+        position: absolute;
+        left: -9999px;
       }
       :host([active]) {
-        display: block;
+        position: static;
+      }
+      * {
+            font-family: 'Roboto', 'Noto', sans-serif;
       }
     </style>
+
+    <!-- Data -->
+    <iron-ajax
+      id="ajax-issues"
+      url="/data/issues.json"
+      handle-as="json"
+      last-response="{{data}}"
+      auto></iron-ajax>
+
+    <!-- Filter -->
+    <paper-menu selected="0">
+      <paper-item on-click="_showAll">
+        Show All Issues
+      </paper-item>
+      <paper-item on-click="_showClosed">
+        Show Closed Issues
+      </paper-item>
+      <paper-item on-click="_showOpened">
+        Show Opened Issues
+      </paper-item>
+    </paper-menu>
+
+    <!-- Table -->
     <vaadin-grid id="simple">
       <table>
         <colgroup>
@@ -25,23 +52,35 @@
       </table>
     </vaadin-grid>
   </template>
+
   <script>
     Polymer({
       is: 'data-page',
       properties: {
-
         active: {
           type: Boolean,
-          value: true
+          value: false
         },
         data: {
           type: Array,
-          observer: '_issuesUpdated'
+          observer: '_dataUpdated',
+          value: []
+        },
+        issues: {
+          type: Array,
+          observer: '_issuesUpdated',
+          value: []
         }
       },
       ready: function () {
-        var grid = this.$$('#simple');
-        var that = this;
+        var ajaxIssues = this.$$('#ajax-issues');
+        var grid = this.$$('#simple');  
+
+        setInterval(function () {
+          if (this.active) {
+            ajaxIssues.generateRequest();
+          }
+        }.bind(this), 1000);
 
         var map = [
           "submission-timestamp",
@@ -53,17 +92,61 @@
           "employee-name"
         ];
 
-        grid.addEventListener('sort-order-changed', function(e) {
+        grid.addEventListener('sort-order-changed', function (e) {
           var idx = map[grid.sortOrder[0].column];
           var lesser = grid.sortOrder[0].direction == 'asc' ? -1 : 1;
 
           e.preventDefault();
-          that.data.sort(function(a, b) {
+          grid.items.sort(function(a, b) {
             return (a[idx] < b[idx]) ? lesser : -lesser;
           });
-        });
+        }.bind(this));
+      },
+      _showClosed: function (e) {
+        var grid = this.$$('#simple');
+        var data = JSON.parse(JSON.stringify(this.data));
+        var event = document.createEvent("HTMLEvents");
+        var filtered = data.reduce(function (arr, row) {
+          if (row['open-closed-status'] === "closed") arr.push(row);
+          return arr;
+        }, []);
 
-        /*var filterElement = document.querySelector('#filter');
+        event.initEvent('sort-order-changed', true, true);
+
+        grid.items = this._convertDates(filtered);
+        grid.size = filtered.length;
+        grid.dispatchEvent(event);
+        grid.refreshItems();
+      },
+      _showOpened: function (e) {
+        var grid = this.$$('#simple');
+        var data = JSON.parse(JSON.stringify(this.data));
+        var event = document.createEvent("HTMLEvents");
+        var filtered = data.reduce(function (arr, row) {
+          if (row['open-closed-status'] === "opened") arr.push(row);
+          return arr;
+        }, []);
+
+        event.initEvent('sort-order-changed', true, true);
+
+        grid.items = this._convertDates(filtered);
+        grid.size = filtered.length;
+        grid.dispatchEvent(event);
+        grid.refreshItems();
+      },
+      _showAll: function (e) {
+        var grid = this.$$('#simple');
+        var data = JSON.parse(JSON.stringify(this.data));
+        var event = document.createEvent("HTMLEvents");
+        event.initEvent('sort-order-changed', true, true);
+
+        grid.items = this._convertDates(data);
+        grid.size = data.length;
+        grid.dispatchEvent(event);
+        grid.refreshItems();
+      },
+      _searchIssues: function (e) {
+        var filterElement = document.querySelector('#filter');
 
         filterElement.addEventListener('input', function() {
           grid.refreshItems();
@@ -76,14 +159,40 @@
           });
           var slice = data.slice(params.index, params.index + params.count);
           callback(slice, data.length);
-        };*/
+        };
+      },
+      _dataUpdated: function (newValue, oldValue) {
+        console.log("_dataUpdated");
+        if (typeof oldValue === "undefined") return;
+
+        newValue = newValue.reduce(function (a, b) {
+          a.push(b);
+          return a
+        }, []);
+
+        oldValue = oldValue.reduce(function (a, b) {
+          delete b['$H'];
+          a.push(b);
+          return a;
+        }, []); 
+  
+        // If the data has been updated, then parse the data
+        if (JSON.stringify(newValue) != JSON.stringify(oldValue)) {
+          this.issues = JSON.parse(JSON.stringify(newValue));
+          console.log('updated data received');
+          return true;
+        }
       },
       _issuesUpdated: function (newValue, oldValue) {
-        //if (typeof newValue === "undefined") return;
-
+        console.log("_issuesUpdated");
         var grid = this.$$('#simple');
 
-        newValue = newValue.map(function (item) {
+        grid.items = this._convertDates(newValue);
+        grid.size = newValue.length;
+        grid.refreshItems();
+      },
+      _convertDates: function (data) {
+        return data.map(function (item) {
           var d;
 
           d = new Date(parseInt(item['submission-timestamp']));
@@ -96,14 +205,6 @@
 
           return item;
         });
-
-        if (newValue === oldValue) {
-          return false;
-        }
-
-        grid.items = this.data;
-        grid.size = this.data.length;
-/*        grid.refreshItems();*/
       }
     });
   </script>

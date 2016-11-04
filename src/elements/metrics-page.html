@@ -6,10 +6,11 @@
   <template>
     <style>
       :host {
-        display: none;
+        position: absolute;
+        left: -9999px;
       }
       :host([active]) {
-        display: block;
+        position: static;
       }
       .card-content h1 {
         text-align: center;
@@ -19,14 +20,33 @@
         height: 500px;
         margin: 16px;
       }
-      paper-card:nth-child(1) {
+      paper-card:nth-child(3) {
         height: 200px;
       }
       google-chart {
         width: 100%;
         height: 75%;
       }
+      * {
+            font-family: 'Roboto', 'Noto', sans-serif;
+      }
     </style>
+
+    <!-- Data -->
+    <iron-ajax
+      id="ajax-issues"
+      url="/data/issues.json"
+      handle-as="json"
+      last-response="{{issues}}"
+      auto></iron-ajax>
+    <iron-ajax
+      id="ajax-sales"
+      url="/data/monthly-sales.json"
+      handle-as="json"
+      last-response="{{sales}}"
+      auto></iron-ajax>
+
+    <!-- Display -->
     <paper-card heading="Open issues">
       <div class="card-content">
         <h1>{{issues.length}}</h1>
@@ -49,6 +69,7 @@
       </div>
     </paper-card>
   </template>
+
   <script>
     Polymer({
       is: 'metrics-page',
@@ -66,7 +87,17 @@
           observer: '_issuesChanged'
         }
       },
-      ready: function () {},
+      ready: function () {
+         var ajaxIssues = this.$$('#ajax-issues');
+         var ajaxSales = this.$$('#ajax-sales');
+
+        setInterval(function () {
+          if (this.active === true) {
+            ajaxIssues.generateRequest();
+            ajaxSales.generateRequest();
+          }
+        }.bind(this), 1000);
+      },
       _salesChanged: function (newValue, oldValue) {
         var months = [
           ["January", newValue['january']['customers']],

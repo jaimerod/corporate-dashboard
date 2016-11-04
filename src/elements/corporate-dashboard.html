@@ -12,42 +12,24 @@
       :host {
         display: block;
       }
+      metrics-page,
+      geo-page,
+      data-page {
+        width: 100%;
+      }
     </style>
-    <!-- Data -->
-    <iron-ajax
-      id="ajax-issues"
-      url="/data/issues.json"
-      handle-as="json"
-      last-response="{{issues}}"
-      auto></iron-ajax>
-    <iron-ajax
-      id="ajax-employees"
-      url="/data/employees.csv"
-      handle-as="text"
-      last-response="{{employees}}"
-      auto></iron-ajax>
-    <iron-ajax
-      id="ajax-sales"
-      url="/data/monthly-sales.json"
-      handle-as="json"
-      last-response="{{sales}}"
-      auto></iron-ajax>
-
     <!-- Routing -->
     <app-location
       route="{{route}}"
       use-hash-as-path></app-location>
     <app-route route="{{route}}"
                pattern="/metrics"
-               data="{{data}}"
                active="{{metricsActive}}"></app-route>
     <app-route route="{{route}}"
                pattern="/geo"
-               data="{{data}}"
                active="{{geoActive}}"></app-route>
     <app-route route="{{route}}"
                pattern="/data"
-               data="{{data}}"
                active="{{dataActive}}"></app-route>
 
     <!-- Display -->
@@ -62,17 +44,17 @@
                 <paper-item on-click="_setCurrentPage">
                   Geospacial View
                 </paper-item>
-            </a>
-             <a href="#/metrics">
-                <paper-item on-click="_setCurrentPage">
-                  Metrics View
-                </paper-item>
-            </a>
-             <a href="#/data">
-                <paper-item on-click="_setCurrentPage">
-                  Data View
-                </paper-item>
-            </a>
+              </a>
+              <a href="#/metrics">
+                  <paper-item on-click="_setCurrentPage">
+                    Metrics View
+                  </paper-item>
+              </a>
+              <a href="#/data">
+                  <paper-item on-click="_setCurrentPage">
+                    Data View
+                  </paper-item>
+              </a>
            </paper-menu>
         </div>
       </paper-header-panel>
@@ -104,61 +86,14 @@
       properties: {
         currentPage: {
           type: String,
-          value: "Metrics View"
-        },
-        employees: {
-          type: Array,
-          observer: '_employeesChanged'
-        },
-        issues: {
-          type: Array,
-          observer: '_issuesChanged'
+          value: "Corporate Dashboard"
         }
       },
       ready: function () {
-        var ajaxEmployee = this.$$('#ajax-employees');
-        var ajaxIssues = this.$$('#ajax-issues');
-
-        setInterval(function () {
-          ajaxEmployee.generateRequest();
-          ajaxIssues.generateRequest(); 
-        }, 10000);
-
-        document.location = "/#/metrics";
-
+        if (document.location.hash === "") document.location = "/#/metrics";
       },
       _setCurrentPage: function (e) {
         this.currentPage = e.target.textContent;
-      },
-      _issuesChanged: function (newValue, oldValue) {
-
-      },
-      _employeesChanged: function (newValue, oldValue) {
-        var json = this._parseCSV(newValue, ",");
-        json.shift();
-        json.forEach(function (item, index, items) {
-          json[index][1] = parseInt(json[index][1]);
-        });
-        this.employeesJSON = json;
-      },
-      _parseCSV: function(s, sep) {
-        if (typeof s !== "string") return false;
-
-        // http://stackoverflow.com/questions/1155678/javascript-string-newline-character
-        var universalNewline = /\r\n|\r|\n/g;
-        var a = s.split(universalNewline);
-        for(var i in a){
-          for (var f = a[i].split(sep = sep || ","), x = f.length - 1, tl; x >= 0; x--) {
-            if (f[x].replace(/"\s+$/, '"').charAt(f[x].length - 1) == '"') {
-              if ((tl = f[x].replace(/^\s+"/, '"')).length > 1 && tl.charAt(0) == '"') {
-                f[x] = f[x].replace(/^\s*"|"\s*$/g, '').replace(/""/g, '"');
-              } else if (x) {
-                f.splice(x - 1, 2, [f[x - 1], f[x]].join(sep));
-              } else f = f.shift().split(sep).concat(f);
-            } else f[x].replace(/""/g, '"');
-          } a[i] = f;
-        }
-        return a;
       }
     });
   </script>
