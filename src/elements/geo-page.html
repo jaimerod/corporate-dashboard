@@ -27,6 +27,7 @@
 
     <!-- Display -->
     <google-chart
+      id="geoChart"
       type='geo'
       options='{"region": "US", "resolution": "provinces"}'
       cols='[{"label":"State", "type":"string"}, {"label":"Employees", "type":"number"}]'
@@ -49,12 +50,19 @@
       },
       ready: function () {
         var ajaxEmployee = this.$$('#ajax-employees');
+        var chart = this.$$('#geoChart');
 
         setInterval(function () {
           if (this.active === true) {
             ajaxEmployee.generateRequest();
           }
         }.bind(this), 1000);
+
+        window.addEventListener('resize', function (e) {
+          console.log('resize');
+          console.dir(chart); 
+          chart.redraw();
+        });
       },
 
       _dataChanged: function (newValue, oldValue) {
